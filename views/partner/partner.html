@@ -1,0 +1,15 @@
+<section id="partner" class="section partner">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="section-title">Event Partner</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3" ng-repeat="partner in vm.partners">
+                <a ng-style="{background: 'url(' + partner.metadata.image.url + ') center center/contain no-repeat'}"
+                   class="partner-box"></a>
+            </div>
+        </div>
+    </div>
+</section>

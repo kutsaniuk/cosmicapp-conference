@@ -1,0 +1,24 @@
+<div class="row">
+    <div class="col-lg-12">
+        <table class="table table-striped">
+            <tr>
+                <th>#</th>
+                <th>Avatar</th>
+                <th>Full Name</th>
+                <th>Profession</th>
+                <th>Action</th>
+            </tr>
+            <tr ng-repeat="speaker in vm.speakers">
+                <td>{{$index + 1}}</td>
+                <td><img ng-src="{{speaker.metadata.avatar.url}}" class="img-responsive" width="50"></td>
+                <td><a ui-sref="admin.speakers.edit({slug: speaker.slug})">{{speaker.title}}</a></td>
+                <td>{{speaker.metadata.profession}}</td>
+                <td class="text-left">
+                    <a ui-sref="admin.speakers.edit({slug: speaker.slug})" class="btn btn-default btn-sm"><i class="fa fa-pencil"></i></a>
+                    <button class="btn btn-default btn-sm" ng-click="vm.removeSpeaker(speaker.slug)"><i class="fa fa-remove"></i></button>
+                </td>
+            </tr>
+        </table>
+        <a class="btn btn-success" ui-sref="admin.speakers.add"><i class="fa fa-plus"></i> Add speaker</a>
+    </div>
+</div>

@@ -1,0 +1,27 @@
+<section id="speakers" class="section speakers">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                <h3 class="section-title">Speakers</h3>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4" ng-repeat="speaker in vm.speakers">
+                <div class="speaker">
+
+                    <figure>
+                        <img alt="" class="img-responsive center-block" ng-src="{{speaker.metadata.avatar.url}}">
+                    </figure>
+
+                    <h4>{{speaker.title}}</h4>
+
+                    <p>{{speaker.metadata.profession}}</p>
+
+                </div><!-- /.speaker -->
+            </div><!-- /.col-md-4 -->
+        </div>
+    </div>
+</section>

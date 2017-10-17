@@ -1,0 +1,14 @@
+<section id="schedule" class="section schedule">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="section-title">Event Schedule</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div ng-repeat="schedule in vm.schedules" ng-bind-html="schedule.content">
+
+            </div>
+        </div>
+    </div>
+</section>

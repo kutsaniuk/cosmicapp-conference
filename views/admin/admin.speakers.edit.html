@@ -1,0 +1,53 @@
+<div class="row">
+    <div class="col-sm-12">
+        <h4>
+            <span ng-if="vm.action === 'add'">New</span>
+            <span ng-if="vm.action === 'edit'">Edit</span>
+            Speaker
+        </h4>
+        <form name="vm.speakerForm" ng-submit="vm.save()">
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <input type="text"
+                           class="form-control"
+                           name="title"
+                           ng-model="ngDialogData.title"
+                           placeholder="Title"
+                           required>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="form-group">
+                    <input type="text"
+                           class="form-control"
+                           name="profession"
+                           ng-model="ngDialogData.metafields[0].value"
+                           placeholder="Profession"
+                           required>
+                </div>
+            </div>
+        <div class="row"
+             flow-init="vm.flowConfig"
+             flow-name="vm.flow">
+            <div class="col-sm-12">
+                <div class="thumbnail" ng-if="!vm.flow.files.length && ngDialogData.metafields[1].url">
+                    <img ng-src="{{ngDialogData.metafields[1].url}}">
+                </div>
+                <div class="thumbnail" ng-if="vm.flow.files.length">
+                    <img ng-if="vm.flow.files.length" flow-img="vm.flow.files[0]">
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <button type="button" ng-show="!vm.flow.files.length" class="btn btn-primary btn-block btn-sm" flow-btn>Change avatar</button>
+                <div ng-show="vm.flow.files.length">
+                    <uib-progressbar class="event-progress active" max="100" value="vm.uploadProgress"></uib-progressbar>
+                    <button type="button" class="btn btn-default btn-block btn-sm" ng-click="vm.flow.cancel()">Cancel</button>
+                </div>
+                <br>
+                <button ng-if="vm.action === 'add'" class="btn btn-success btn-block" type="submit" ng-class="{'disabled': !vm.flow.files.length || vm.speakerForm.$invalid}">Save</button>
+                <button ng-if="vm.action === 'edit'" class="btn btn-success btn-block" type="submit" ng-class="{'disabled': vm.speakerForm.$invalid}">Save</button>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>

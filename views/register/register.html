@@ -1,0 +1,109 @@
+<section id="registration" class="section registration">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="section-title">Registration &amp; Pricing</h3>
+            </div>
+        </div>
+
+        <form name="vm.registerForm" ng-submit="vm.register()" id="registration-form">
+            <div class="row">
+                <div class="col-md-12" id="registration-msg" style="display:none;">
+                    <div class="alert"></div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <input type="text" class="form-control"
+                               placeholder="First Name"
+                               id="first_name"
+                               name="first_name"
+                               ng-model="vm.member.first_name"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Last Name"
+                               id="last_name"
+                               name="last_name"
+                               ng-model="vm.member.last_name"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="email"
+                               class="form-control"
+                               placeholder="Email"
+                               id="email"
+                               name="email"
+                               ng-model="vm.member.email"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Phone"
+                               id="phone"
+                               name="phone"
+                               ng-model="vm.member.phone"
+                               required>
+                    </div>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Address"
+                               id="address"
+                               name="address"
+                               ng-model="vm.member.address"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Zip Code"
+                               id="zip_code"
+                               name="zip_code"
+                               ng-model="vm.member.zip_code"
+                               required>
+                    </div>
+
+                    <div class="form-group">
+                        <select class="form-control"
+                                name="city"
+                                id="city"
+                                ng-model="vm.member.city"
+                                required>
+                            <option readonly>City</option>
+                            <option>City Name 1</option>
+                            <option>City Name 2</option>
+                            <option>City Name 3</option>
+                            <option>City Name 4</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <select class="form-control"
+                                name="program"
+                                id="program"
+                                ng-model="vm.member.program"
+                                required>
+                            <option readonly>Select Your Program</option>
+                            <option>Program Name 1</option>
+                            <option>Program Name 2</option>
+                            <option>Program Name 3</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt20">
+                <button type="submit" class="btn btn-black" id="registration-submit-btn">Submit</button>
+            </div>
+        </form>
+    </div>
+</section>
