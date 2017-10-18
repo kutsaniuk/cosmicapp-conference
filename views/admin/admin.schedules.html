@@ -1,0 +1,7 @@
+<div class="row" ng-repeat="schedule in vm.schedules">
+    <div class="col-sm-12" text-angular ta-toolbar="vm.toolbarEditor" ng-model="schedule.content"></div>
+    <div class="col-sm-12">
+        <br>
+        <button class="btn btn-success" ng-click="vm.save(schedule)">Save</button>
+    </div>
+</div>

@@ -27,7 +27,7 @@
                 });
             };
             this.updateSchedule = function (schedule) {
-                event.write_key = WRITE_KEY;
+                schedule.write_key = WRITE_KEY;
 
                 return $http.put(URL + BUCKET_SLUG + '/edit-object', schedule);
             };

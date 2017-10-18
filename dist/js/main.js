@@ -167,7 +167,7 @@ angular.module("config", [])
             AboutService
                 .getPages()
                 .then(success, error);
-        }
+        } 
 
         function save(index) {
             function success() {
@@ -273,7 +273,8 @@ angular.module("config", [])
     angular
         .module('admin', [
             'admin.pages',
-            'admin.speakers'
+            'admin.speakers',
+            'admin.schedules'
         ])
         .config(config);
 
@@ -285,7 +286,7 @@ angular.module("config", [])
                 url: '/admin/',
                 abstract: true,
                 templateUrl: '../views/admin/admin.html',
-                controller: 'GlobalCtrl as vm', 
+                controller: 'GlobalCtrl as vm',
                 data: {
                     is_granted: ['ROLE_ADMIN']
                 }
@@ -716,6 +717,12 @@ angular.module("config", [])
 
         init();
 
+        vm.toolbarEditor = [
+            ['h1', 'h2', 'h3', 'h4', 'h5', 'p', 'bold', 'italics', 'underline', 'justifyLeft', 'justifyCenter', 'justifyRight', 'html']
+        ];
+
+        vm.save = save;
+
         function init() {
             getSchedules(); 
         }
@@ -731,6 +738,20 @@ angular.module("config", [])
 
             ScheduleService
                 .getSchedules()
+                .then(success, error);
+        }
+
+        function save(schedule) {
+            function success() {
+                Notification.primary('Schedule updated!');
+            }
+
+            function error(response) {
+                $log.error(response.data);
+            }
+
+            ScheduleService
+                .updateSchedule(schedule)
                 .then(success, error);
         }
 
@@ -786,7 +807,7 @@ angular.module("config", [])
                 });
             };
             this.updateSchedule = function (schedule) {
-                event.write_key = WRITE_KEY;
+                schedule.write_key = WRITE_KEY;
 
                 return $http.put(URL + BUCKET_SLUG + '/edit-object', schedule);
             };
@@ -1019,10 +1040,7 @@ angular.module("config", [])
     'use strict';
     
     angular
-        .module('admin.pages', [
-            // 'admin.watches.edit',
-            // 'admin.watches.add'
-        ])
+        .module('admin.pages', [])
         .config(config);
 
     config.$inject = ['$stateProvider', '$urlRouterProvider'];
@@ -1033,6 +1051,29 @@ angular.module("config", [])
                 url: 'pages',
                 templateUrl: '../views/admin/admin.pages.html',
                 controller: 'AboutCtrl as vm',
+                data: {
+                    is_granted: ['ROLE_ADMIN']
+                }
+            });
+    }
+    
+})();
+ 
+(function () {
+    'use strict';
+    
+    angular
+        .module('admin.schedules', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('admin.schedules', {
+                url: 'schedules',
+                templateUrl: '../views/admin/admin.schedules.html',
+                controller: 'ScheduleCtrl as vm',
                 data: {
                     is_granted: ['ROLE_ADMIN']
                 }
@@ -1059,291 +1100,6 @@ angular.module("config", [])
                 url: 'speakers',
                 templateUrl: '../views/admin/admin.speakers.html',
                 controller: 'SpeakersCtrl as vm',
-                data: {
-                    is_granted: ['ROLE_ADMIN']
-                }
-            });
-    }
-    
-})();
- 
-(function () {
-    'use strict'; 
-
-    angular
-        .module('main')
-        .controller('AdminWatchesAdd', AdminWatchesAdd);
-
-    function AdminWatchesAdd($state, WatchService, Notification, $log, $scope, MEDIA_URL, ngDialog) {
-        var vm = this;
-
-        vm.updateWatch = updateWatch;
-        vm.upload = upload;
-
-        vm.uploadProgress = [0, 0, 0];
-
-        vm.event = {};
-        vm.flow = {};
-
-        vm.flowConfig = {
-            target: MEDIA_URL,
-            singleFile: false
-        };
-
-        function updateWatch(watch) {
-            function success(response) {
-                $log.info(response);
-
-                Notification.primary(
-                    {
-                        message: 'Saved',
-                        delay: 800,
-                        replaceMessage: true
-                    }
-                );
-
-                $state.go('admin.watches', null, {reload: true});
-                ngDialog.close();
-            }
-
-            function failed(response) {
-                $log.error(response);
-            }
-
-
-            if (vm.flow.files.length &&
-                vm.uploadProgress[0] === 100 &&
-                vm.uploadProgress[1] === 100 &&
-                vm.uploadProgress[2] === 100)
-                WatchService
-                    .createWatch(watch)
-                    .then(success, failed);
-            else
-                WatchService
-                    .createWatch(watch)
-                    .then(success, failed);
-        }
-
-        function upload() {
-            vm.flow.files.forEach(function (item, i) {
-                if (i < 3)
-                    WatchService
-                        .upload(item.file)
-                        .then(function(response){
-
-                            $scope.ngDialogData.metafields[11].children[i].value = response.media.name;
-
-                        }, function(){
-                            console.log('failed :(');
-                        }, function(progress){
-                            vm.uploadProgress[i] = progress;
-                        });
-            });
-
-        }
-
-    }
-})();
-
-(function () {
-    'use strict';
-    
-    angular
-        .module('admin.watches.add', [])
-        .config(config);
-
-    config.$inject = ['$stateProvider', '$urlRouterProvider'];
-    function config($stateProvider, $urlRouterProvider) {
- 
-        $stateProvider
-            .state('admin.watches.add', {
-                url: '/add',
-                onEnter: [
-                'ngDialog',
-                'WatchService',
-                '$stateParams',
-                '$state',
-                '$log',
-                function (ngDialog, WatchService, $stateParams, $state, $log) {
-                    openDialog(WatchService.watch);
-                        
-                    function openDialog(data) {
-    
-                        var options = {
-                            templateUrl: '../views/admin/admin.watches.edit.html',
-                            data: data,
-                            controller: 'AdminWatchesAdd as vm',
-                            showClose: true
-                        };
-    
-                        ngDialog.open(options).closePromise.finally(function () {
-                            $state.go('admin.watches');
-                        });
-                    }
-                }],
-                data: {
-                    is_granted: ['ROLE_ADMIN']
-                }
-            });
-    }
-    
-})();
- 
-(function () {
-    'use strict'; 
-
-    angular
-        .module('main')
-        .controller('AdminWatchesEdit', AdminWatchesEdit);
-
-    function AdminWatchesEdit($state, WatchService, Notification, $log, $scope, MEDIA_URL, ngDialog) {
-        var vm = this;
-
-        vm.updateWatch = updateWatch;
-        vm.cancelUpload = cancelUpload;
-        vm.upload = upload;
-
-        vm.dateBeginPicker = false;
-        vm.dateEndPicker = false;
-        vm.contentEditor = false;
-        vm.uploadProgress = [0, 0, 0];
-
-        vm.event = {};
-        vm.flow = {};
-        vm.background = {};
-
-        vm.flowConfig = {
-            target: MEDIA_URL,
-            singleFile: false
-        };
-
-        function updateWatch(watch) {
-            function success(response) {
-                $log.info(response);
-
-                Notification.primary(
-                    {
-                        message: 'Saved',
-                        delay: 800,
-                        replaceMessage: true
-                    }
-                );
-
-                $state.go('admin.watches', null, {reload: true});
-                ngDialog.close();
-            }
-
-            function failed(response) {
-                $log.error(response);
-            }
-
-
-            if (vm.flow.files.length &&
-                vm.uploadProgress[0] === 100 &&
-                vm.uploadProgress[1] === 100 &&
-                vm.uploadProgress[2] === 100)
-                WatchService
-                    .updateWatch(watch)
-                    .then(success, failed);
-            else
-                WatchService
-                    .updateWatch(watch)
-                    .then(success, failed);
-        }
-
-        function cancelUpload() {
-            vm.flow.cancel();
-            vm.background = {
-                'background-image': 'url(' + (vm.event.metafields[0].value ? vm.event.metafields[0].url : DEFAULT_EVENT_IMAGE) + ')'
-            };
-        }
-
-        $scope.$watch('vm.flow.files[0].file.name', function () {
-            if (!vm.flow.files[0]) {
-                return ;
-            }
-            var fileReader = new FileReader();
-            fileReader.readAsDataURL(vm.flow.files[0].file);
-            fileReader.onload = function (event) {
-                $scope.$apply(function () {
-                    vm.image = {
-                        'background-image': 'url(' + event.target.result + ')'
-                    };
-                });
-            };
-        });
-
-        function upload() {
-            vm.flow.files.forEach(function (item, i) {
-                if (i < 3)
-                    WatchService
-                        .upload(item.file)
-                        .then(function(response){
-
-                            $scope.ngDialogData.metafields[11].children[i].value = response.media.name;
-
-                        }, function(){
-                            console.log('failed :(');
-                        }, function(progress){
-                            vm.uploadProgress[i] = progress;
-                        });
-            });
-
-        }
-
-    }
-})();
-
-(function () {
-    'use strict';
-    
-    angular
-        .module('admin.watches.edit', [])
-        .config(config);
-
-    config.$inject = ['$stateProvider', '$urlRouterProvider'];
-    function config($stateProvider, $urlRouterProvider) {
- 
-        $stateProvider
-            .state('admin.watches.edit', {
-                url: '/edit/:slug',
-                onEnter: [
-                'ngDialog',
-                'WatchService',
-                '$stateParams',
-                '$state',
-                '$log',
-                function (ngDialog, WatchService, $stateParams, $state, $log) {
-                    getWatch($stateParams.slug);
-    
-                    function getWatch(slug) {
-                        function success(response) {
-                            openDialog(response.data.object);
-                        }
-    
-                        function failed(response) {
-                            $log.error(response);
-                        }
- 
-                        WatchService
-                            .getWatchBySlug(slug)
-                            .then(success, failed);
-                    }
-    
-                    function openDialog(data) {
-    
-                        var options = {
-                            templateUrl: '../views/admin/admin.watches.edit.html',
-                            data: data,
-                            controller: 'AdminWatchesEdit as vm',
-                            showClose: true
-                        };
-    
-                        ngDialog.open(options).closePromise.finally(function () {
-                            $state.go('admin.watches');
-                        });
-                    }
-                }],
                 data: {
                     is_granted: ['ROLE_ADMIN']
                 }

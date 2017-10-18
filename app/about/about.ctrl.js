@@ -32,7 +32,7 @@
             AboutService
                 .getPages()
                 .then(success, error);
-        }
+        } 
 
         function save(index) {
             function success() {

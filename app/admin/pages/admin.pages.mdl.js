@@ -2,10 +2,7 @@
     'use strict';
     
     angular
-        .module('admin.pages', [
-            // 'admin.watches.edit',
-            // 'admin.watches.add'
-        ])
+        .module('admin.pages', [])
         .config(config);
 
     config.$inject = ['$stateProvider', '$urlRouterProvider'];

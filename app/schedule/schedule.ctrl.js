@@ -10,6 +10,12 @@
 
         init();
 
+        vm.toolbarEditor = [
+            ['h1', 'h2', 'h3', 'h4', 'h5', 'p', 'bold', 'italics', 'underline', 'justifyLeft', 'justifyCenter', 'justifyRight', 'html']
+        ];
+
+        vm.save = save;
+
         function init() {
             getSchedules(); 
         }
@@ -25,6 +31,20 @@
 
             ScheduleService
                 .getSchedules()
+                .then(success, error);
+        }
+
+        function save(schedule) {
+            function success() {
+                Notification.primary('Schedule updated!');
+            }
+
+            function error(response) {
+                $log.error(response.data);
+            }
+
+            ScheduleService
+                .updateSchedule(schedule)
                 .then(success, error);
         }
 
