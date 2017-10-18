@@ -270,7 +270,8 @@ angular.module("config", [])
             'admin.pages',
             'admin.speakers',
             'admin.schedules',
-            'admin.partners'
+            'admin.partners',
+            'admin.members'
         ])
         .config(config);
 
@@ -425,41 +426,6 @@ angular.module("config", [])
     }
 })(); 
 
-(function () {
-    'use strict'; 
-
-    angular
-        .module('main')
-        .controller('PhotosCtrl', PhotosCtrl);
-
-    function PhotosCtrl($stateParams, WatchService, Notification, $log, MEDIA_URL, $state) {
-        var vm = this;
-
-        
-
-    }
-})();
-
-(function () {
-    'use strict';
-    
-    angular
-        .module('photos', [])
-        .config(config);
-
-    config.$inject = ['$stateProvider', '$urlRouterProvider'];
-    function config($stateProvider, $urlRouterProvider) {
- 
-        $stateProvider
-            .state('main.photos', {
-                url: 'photos',
-                title: 'Photos',
-                templateUrl: '../views/photos/photos.html',
-                controller: 'PhotosCtrl as vm'
-            });
-    }
-})();
- 
 (function () {
     'use strict'; 
 
@@ -623,6 +589,41 @@ angular.module("config", [])
             }
         });
 })();  
+(function () {
+    'use strict'; 
+
+    angular
+        .module('main')
+        .controller('PhotosCtrl', PhotosCtrl);
+
+    function PhotosCtrl($stateParams, WatchService, Notification, $log, MEDIA_URL, $state) {
+        var vm = this;
+
+        
+
+    }
+})();
+
+(function () {
+    'use strict';
+    
+    angular
+        .module('photos', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('main.photos', {
+                url: 'photos',
+                title: 'Photos',
+                templateUrl: '../views/photos/photos.html',
+                controller: 'PhotosCtrl as vm'
+            });
+    }
+})();
+ 
 (function () {
     'use strict'; 
 
@@ -1092,6 +1093,198 @@ angular.module("config", [])
         });  
 })();  
 (function () {
+    'use strict'; 
+
+    angular
+        .module('main')
+        .controller('AdminMembersCtrl', AdminMembersCtrl);
+
+    function AdminMembersCtrl(AdminMembersService, Notification, $log) {
+        var vm = this;
+
+        init();
+        
+        vm.removeMember = removeMember;
+        
+        function init() {
+            getMembers();
+        }
+
+        function getMembers() {
+            function success(response) {
+                vm.members = response.data.objects;
+            }
+
+            function error(response) {
+                $log.error(response.data);
+            }
+
+            AdminMembersService
+                .getMembers()
+                .then(success, error);
+        }
+
+        function removeMember(slug) {
+            function success() {
+                getMembers();
+                Notification.primary('Removed!');
+            }
+
+            function error(response) {
+                $log.error(response.data);
+            }
+
+            AdminMembersService
+                .removeMember(slug)
+                .then(success, error);
+        }
+
+    }
+})();
+
+(function () {
+    'use strict';
+    
+    angular
+        .module('admin.members', [
+            'admin.members.edit',
+            'admin.members.add'
+        ])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('admin.members', {
+                url: 'members',
+                templateUrl: '../views/admin/admin.members.html',
+                controller: 'AdminMembersCtrl as vm',
+                data: {
+                    is_granted: ['ROLE_ADMIN']
+                }
+            });
+    }
+    
+})();
+ 
+(function () {
+    'use strict';
+
+    angular
+        .module('main')
+        .service('AdminMembersService', function ($http,
+                                          $cookieStore, 
+                                          $q, 
+                                          $rootScope,
+                                          URL, BUCKET_SLUG, READ_KEY, WRITE_KEY, MEDIA_URL) {
+            
+            $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+            this.member = {
+                "title": null,
+                "type_slug": "members",
+                "metafields": [
+                    {
+                        "value": null,
+                        "key": "first_name",
+                        "title": "First Name",
+                        "type": "text",
+                        "children": null
+                    },
+                    {
+                        "value": null,
+                        "key": "last_name",
+                        "title": "Last Name",
+                        "type": "text",
+                        "children": null
+                    },
+                    {
+                        "value": null,
+                        "key": "email",
+                        "title": "Email",
+                        "type": "text",
+                        "children": null
+                    },
+                    {
+                        "value": null,
+                        "key": "phone",
+                        "title": "Phone",
+                        "type": "text",
+                        "children": null
+                    },
+                    {
+                        "value": null,
+                        "key": "address",
+                        "title": "Address",
+                        "type": "text",
+                        "children": null
+                    },
+                    {
+                        "value": null,
+                        "key": "zip_code",
+                        "title": "Zip Code",
+                        "type": "text",
+                        "children": null
+                    },
+                    {
+                        "value": null,
+                        "key": "city",
+                        "title": "City",
+                        "type": "text",
+                        "children": null
+                    },
+                    {
+                        "value": null,
+                        "key": "program",
+                        "title": "Program",
+                        "type": "text",
+                        "children": null
+                    }
+                ]
+            };
+
+            this.getMembers = function () {
+                return $http.get(URL + BUCKET_SLUG + '/object-type/members', {
+                    params: {
+                        limit: 100,
+                        read_key: READ_KEY
+                    }
+                });
+            };
+            this.getMemberBySlug = function (slug) {
+                return $http.get(URL + BUCKET_SLUG + '/object/' + slug, {
+                    params: {
+                        read_key: READ_KEY
+                    }
+                });
+            };
+            this.updateMember = function (member) {
+                member.write_key = WRITE_KEY;
+                member.title = member.first_name + ' ' + member.last_name;
+
+                return $http.put(URL + BUCKET_SLUG + '/edit-object', member);
+            };
+            this.removeMember = function (slug) { 
+                return $http.delete(URL + BUCKET_SLUG + '/' + slug, {
+                    ignoreLoadingBar: true,
+                    headers:{
+                        'Content-Type': 'application/json'
+                    },
+                    data: {
+                        write_key: WRITE_KEY
+                    }
+                });
+            };
+            this.createMember = function (member) {
+                member.write_key = WRITE_KEY;
+                member.title = member.first_name + ' ' + member.last_name;
+
+                return $http.post(URL + BUCKET_SLUG + '/add-object', member);
+            };
+        });
+})();  
+(function () {
     'use strict';
     
     angular
@@ -1181,6 +1374,197 @@ angular.module("config", [])
                 url: 'speakers',
                 templateUrl: '../views/admin/admin.speakers.html',
                 controller: 'SpeakersCtrl as vm',
+                data: {
+                    is_granted: ['ROLE_ADMIN']
+                }
+            });
+    }
+    
+})();
+ 
+(function () {
+    'use strict'; 
+
+    angular
+        .module('main')
+        .controller('AdminMembersAdd', AdminMembersAdd);
+
+    function AdminMembersAdd(AdminMembersService, Notification, $log, ngDialog, $scope) {
+        var vm = this;
+
+        vm.save = createMember;
+
+        vm.action = 'add';
+
+        vm.member = {};
+
+        function createMember() {
+            function success(response) {
+                $log.info(response);
+
+                Notification.primary(
+                    {
+                        message: 'Created!',
+                        delay: 800,
+                        replaceMessage: true
+                    }
+                );
+
+                ngDialog.close();
+            }
+
+            function failed(response) {
+                $log.error(response);
+            }
+
+            AdminMembersService
+                .createMember($scope.ngDialogData)
+                .then(success, failed);
+        }
+
+    }
+})();
+
+(function () {
+    'use strict';
+    
+    angular
+        .module('admin.members.add', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('admin.members.add', {
+                url: '/add',
+                onEnter: [
+                'ngDialog',
+                'AdminMembersService',
+                '$stateParams',
+                '$state',
+                '$log',
+                function (ngDialog, AdminMembersService, $stateParams, $state, $log) {
+                    openDialog(AdminMembersService.member);
+                        
+                    function openDialog(data) {
+    
+                        var options = {
+                            templateUrl: '../views/admin/admin.members.edit.html',
+                            data: data,
+                            controller: 'AdminMembersAdd as vm',
+                            showClose: true
+                        };
+    
+                        ngDialog.open(options)
+                            .closePromise
+                            .then(function (data) {
+                                $state.go('admin.members', {}, {reload: !data.value});
+                                return true;
+                        });
+                    }
+                }],
+                data: {
+                    is_granted: ['ROLE_ADMIN']
+                }
+            });
+    }
+    
+})();
+ 
+(function () {
+    'use strict'; 
+
+    angular
+        .module('main')
+        .controller('AdminMembersEdit', AdminMembersEdit);
+
+    function AdminMembersEdit(AdminMembersService, Notification, $log, ngDialog, $scope) {
+        var vm = this;
+
+        vm.save = updateMember;
+
+        vm.action = 'edit';
+
+        function updateMember() {
+            function success(response) {
+                $log.info(response);
+
+                Notification.primary(
+                    {
+                        message: 'Updated!',
+                        delay: 800,
+                        replaceMessage: true
+                    }
+                );
+
+                ngDialog.close();
+            }
+
+            function failed(response) {
+                $log.error(response);
+            }
+
+            AdminMembersService
+                .updateMember($scope.ngDialogData)
+                .then(success, failed);
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+    
+    angular
+        .module('admin.members.edit', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('admin.members.edit', {
+                url: '/edit/:slug',
+                onEnter: [
+                'ngDialog',
+                'AdminMembersService',
+                '$stateParams',
+                '$state',
+                '$log',
+                function (ngDialog, AdminMembersService, $stateParams, $state, $log) {
+                    getMember($stateParams.slug);
+    
+                    function getMember(slug) {
+                        function success(response) {
+                            openDialog(response.data.object);
+                        }
+    
+                        function failed(response) {
+                            $log.error(response);
+                        }
+
+                        AdminMembersService
+                            .getMemberBySlug(slug)
+                            .then(success, failed);
+                    }
+    
+                    function openDialog(data) {
+    
+                        var options = {
+                            templateUrl: '../views/admin/admin.members.edit.html',
+                            data: data,
+                            controller: 'AdminMembersEdit as vm',
+                            showClose: true
+                        };
+    
+                        ngDialog.open(options)
+                            .closePromise
+                            .then(function (data) {
+                                $state.go('admin.members', {}, {reload: !data.value});
+                                return true;
+                        });
+                    }
+                }],
                 data: {
                     is_granted: ['ROLE_ADMIN']
                 }

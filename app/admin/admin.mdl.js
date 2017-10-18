@@ -6,7 +6,8 @@
             'admin.pages',
             'admin.speakers',
             'admin.schedules',
-            'admin.partners'
+            'admin.partners',
+            'admin.members'
         ])
         .config(config);
 

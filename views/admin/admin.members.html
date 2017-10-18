@@ -1,0 +1,24 @@
+<div class="row">
+    <div class="col-lg-12">
+        <table class="table table-striped">
+            <tr>
+                <th>#</th>
+                <th ng-repeat="metafield in vm.members[0].metafields">
+                    {{metafield.title}}
+                </th>
+                <th>Action</th>
+            </tr>
+            <tr ng-repeat="member in vm.members">
+                <td>{{$index + 1}}</td>
+                <td ng-repeat="value in member.metadata">
+                    {{value}}
+                </td>
+                <td class="text-left">
+                    <a ui-sref="admin.members.edit({slug: member.slug})" class="btn btn-default btn-sm"><i class="fa fa-pencil"></i></a>
+                    <button class="btn btn-default btn-sm" ng-click="vm.removeMember(member.slug)"><i class="fa fa-remove"></i></button>
+                </td>
+            </tr>
+        </table>
+        <a class="btn btn-success" ui-sref="admin.members.add"><i class="fa fa-plus"></i> Add member</a>
+    </div>
+</div>
