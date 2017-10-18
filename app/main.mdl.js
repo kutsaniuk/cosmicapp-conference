@@ -17,7 +17,6 @@
             'flow',
             'angular-loading-bar',
             'hl.sticky',
-            'stripe.checkout',
 
             'about',
             'speakers',
@@ -33,13 +32,9 @@
         .config(config)
         .run(run);
 
-    config.$inject = ['$stateProvider', '$urlRouterProvider', 'cfpLoadingBarProvider', 'NotificationProvider', 'StripeCheckoutProvider', 'STRIPE_KEY'];
-    function config($stateProvider, $urlRouterProvider, cfpLoadingBarProvider, NotificationProvider, StripeCheckoutProvider, STRIPE_KEY) {
+    config.$inject = ['$stateProvider', '$urlRouterProvider', 'cfpLoadingBarProvider', 'NotificationProvider'];
+    function config($stateProvider, $urlRouterProvider, cfpLoadingBarProvider, NotificationProvider) {
         cfpLoadingBarProvider.includeSpinner = false;
-
-        StripeCheckoutProvider.defaults({
-            key: STRIPE_KEY
-        });
 
         NotificationProvider.setOptions({
             startTop: 25,

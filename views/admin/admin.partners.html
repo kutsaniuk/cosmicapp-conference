@@ -1,0 +1,22 @@
+<div class="row">
+    <div class="col-lg-12">
+        <table class="table table-striped">
+            <tr>
+                <th>#</th>
+                <th>Logo</th>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+            <tr ng-repeat="partner in vm.partners">
+                <td>{{$index + 1}}</td>
+                <td><img ng-src="{{partner.metadata.image.url}}" class="img-responsive" width="50"></td>
+                <td><a ui-sref="admin.partners.edit({slug: partner.slug})">{{partner.title}}</a></td>
+                <td class="text-left">
+                    <a ui-sref="admin.partners.edit({slug: partner.slug})" class="btn btn-default btn-sm"><i class="fa fa-pencil"></i></a>
+                    <button class="btn btn-default btn-sm" ng-click="vm.removePartner(partner.slug)"><i class="fa fa-remove"></i></button>
+                </td>
+            </tr>
+        </table>
+        <a class="btn btn-success" ui-sref="admin.partners.add"><i class="fa fa-plus"></i> Add partner</a>
+    </div>
+</div>

@@ -25,7 +25,6 @@ angular.module("config", [])
             'flow',
             'angular-loading-bar',
             'hl.sticky',
-            'stripe.checkout',
 
             'about',
             'speakers',
@@ -41,13 +40,9 @@ angular.module("config", [])
         .config(config)
         .run(run);
 
-    config.$inject = ['$stateProvider', '$urlRouterProvider', 'cfpLoadingBarProvider', 'NotificationProvider', 'StripeCheckoutProvider', 'STRIPE_KEY'];
-    function config($stateProvider, $urlRouterProvider, cfpLoadingBarProvider, NotificationProvider, StripeCheckoutProvider, STRIPE_KEY) {
+    config.$inject = ['$stateProvider', '$urlRouterProvider', 'cfpLoadingBarProvider', 'NotificationProvider'];
+    function config($stateProvider, $urlRouterProvider, cfpLoadingBarProvider, NotificationProvider) {
         cfpLoadingBarProvider.includeSpinner = false;
-
-        StripeCheckoutProvider.defaults({
-            key: STRIPE_KEY
-        });
 
         NotificationProvider.setOptions({
             startTop: 25,
@@ -274,7 +269,8 @@ angular.module("config", [])
         .module('admin', [
             'admin.pages',
             'admin.speakers',
-            'admin.schedules'
+            'admin.schedules',
+            'admin.partners'
         ])
         .config(config);
 
@@ -434,12 +430,49 @@ angular.module("config", [])
 
     angular
         .module('main')
-        .controller('PartnerCtrl', PartnerCtrl);
+        .controller('PhotosCtrl', PhotosCtrl);
+
+    function PhotosCtrl($stateParams, WatchService, Notification, $log, MEDIA_URL, $state) {
+        var vm = this;
+
+        
+
+    }
+})();
+
+(function () {
+    'use strict';
+    
+    angular
+        .module('photos', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('main.photos', {
+                url: 'photos',
+                title: 'Photos',
+                templateUrl: '../views/photos/photos.html',
+                controller: 'PhotosCtrl as vm'
+            });
+    }
+})();
+ 
+(function () {
+    'use strict'; 
+
+    angular
+        .module('main')
+        .controller('PartnerCtrl', PartnerCtrl); 
 
     function PartnerCtrl($stateParams, PartnerService, Notification, $log, MEDIA_URL, $state) {
         var vm = this;
 
         init();
+        
+        vm.removePartner = removePartner;
 
         function init() {
             getPartners();
@@ -456,6 +489,21 @@ angular.module("config", [])
 
             PartnerService
                 .getPartners()
+                .then(success, error);
+        }
+
+        function removePartner(slug) {
+            function success() {
+                getPartners();
+                Notification.primary('Removed!');
+            }
+
+            function error(response) {
+                $log.error(response.data);
+            }
+
+            PartnerService
+                .removePartner(slug)
                 .then(success, error);
         }
 
@@ -495,6 +543,19 @@ angular.module("config", [])
             
             $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
+            this.partner = {
+                "type_slug": "partners",
+                "title": "VNM",
+                "metafields": [
+                    {
+                        "value": null,
+                        "key": "image",
+                        "title": "Image",
+                        "type": "file"
+                    }
+                ]
+            };
+
             this.getPartners = function () {
                 return $http.get(URL + BUCKET_SLUG + '/object-type/partners', {
                     params: {
@@ -511,7 +572,7 @@ angular.module("config", [])
                 });
             };
             this.updatePartner = function (partner) {
-                event.write_key = WRITE_KEY;
+                partner.write_key = WRITE_KEY;
 
                 return $http.put(URL + BUCKET_SLUG + '/edit-object', partner);
             };
@@ -527,47 +588,41 @@ angular.module("config", [])
                 });
             };
             this.createPartner = function (partner) {
-                watch.write_key = WRITE_KEY;
+                partner.write_key = WRITE_KEY;
                 
                 return $http.post(URL + BUCKET_SLUG + '/add-object', partner);
             };
+            this.upload = function (file) {
+                var fd = new FormData();
+
+                fd.append('media', file);
+                fd.append('write_key', WRITE_KEY);
+
+                var defer = $q.defer();
+
+                var xhttp = new XMLHttpRequest();
+
+                xhttp.upload.addEventListener("progress",function (e) {
+                    defer.notify(parseInt(e.loaded * 100 / e.total));
+                });
+                xhttp.upload.addEventListener("error",function (e) {
+                    defer.reject(e);
+                });
+
+                xhttp.onreadystatechange = function() {
+                    if (xhttp.readyState === 4) {
+                        defer.resolve(JSON.parse(xhttp.response)); //Outputs a DOMString by default
+                    }
+                };
+
+                xhttp.open("post", MEDIA_URL, true);
+
+                xhttp.send(fd);
+
+                return defer.promise;
+            }
         });
 })();  
-(function () {
-    'use strict'; 
-
-    angular
-        .module('main')
-        .controller('PhotosCtrl', PhotosCtrl);
-
-    function PhotosCtrl($stateParams, WatchService, Notification, $log, MEDIA_URL, $state) {
-        var vm = this;
-
-        
-
-    }
-})();
-
-(function () {
-    'use strict';
-    
-    angular
-        .module('photos', [])
-        .config(config);
-
-    config.$inject = ['$stateProvider', '$urlRouterProvider'];
-    function config($stateProvider, $urlRouterProvider) {
- 
-        $stateProvider
-            .state('main.photos', {
-                url: 'photos',
-                title: 'Photos',
-                templateUrl: '../views/photos/photos.html',
-                controller: 'PhotosCtrl as vm'
-            });
-    }
-})();
- 
 (function () {
     'use strict'; 
 
@@ -1063,6 +1118,32 @@ angular.module("config", [])
     'use strict';
     
     angular
+        .module('admin.partners', [
+            'admin.partners.edit',
+            'admin.partners.add'
+        ])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('admin.partners', {
+                url: 'partners',
+                templateUrl: '../views/admin/admin.partners.html',
+                controller: 'PartnerCtrl as vm',
+                data: {
+                    is_granted: ['ROLE_ADMIN']
+                }
+            });
+    }
+    
+})();
+ 
+(function () {
+    'use strict';
+    
+    angular
         .module('admin.schedules', [])
         .config(config);
 
@@ -1100,6 +1181,249 @@ angular.module("config", [])
                 url: 'speakers',
                 templateUrl: '../views/admin/admin.speakers.html',
                 controller: 'SpeakersCtrl as vm',
+                data: {
+                    is_granted: ['ROLE_ADMIN']
+                }
+            });
+    }
+    
+})();
+ 
+(function () {
+    'use strict'; 
+
+    angular
+        .module('main')
+        .controller('AdminPartnerAdd', AdminPartnerAdd);
+
+    function AdminPartnerAdd(PartnerService, Notification, $log, $scope, MEDIA_URL, ngDialog) {
+        var vm = this;
+
+        vm.save = upload;
+
+        vm.uploadProgress = 0;
+        vm.action = 'add';
+
+        vm.partner = {};
+        vm.flow = {};
+
+        vm.flowConfig = {
+            target: MEDIA_URL,
+            singleFile: true
+        };
+
+        function createPartner(partner) {
+            function success(response) {
+                $log.info(response);
+
+                Notification.primary(
+                    {
+                        message: 'Created!',
+                        delay: 800,
+                        replaceMessage: true
+                    }
+                );
+
+                ngDialog.close();
+            }
+
+            function failed(response) {
+                $log.error(response);
+            }
+
+            PartnerService
+                .createPartner(partner)
+                .then(success, failed);
+        }
+
+        function upload() {
+            if (vm.flow.files.length)
+                PartnerService
+                    .upload(vm.flow.files[0].file)
+                    .then(function(response){
+    
+                        $scope.ngDialogData.metafields[0].value = response.media.name;
+
+                        createPartner($scope.ngDialogData);
+    
+                    }, function(){
+                        console.log('failed :(');
+                    }, function(progress){
+                        vm.uploadProgress = progress;
+                    });
+        }
+
+    }
+})();
+
+(function () {
+    'use strict';
+    
+    angular
+        .module('admin.partners.add', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('admin.partners.add', {
+                url: '/add',
+                onEnter: [
+                'ngDialog',
+                'PartnerService',
+                '$stateParams',
+                '$state',
+                '$log',
+                function (ngDialog, PartnerService, $stateParams, $state, $log) {
+                    openDialog(PartnerService.partner);
+                        
+                    function openDialog(data) {
+    
+                        var options = {
+                            templateUrl: '../views/admin/admin.partners.edit.html',
+                            data: data,
+                            controller: 'AdminPartnerAdd as vm',
+                            showClose: true
+                        };
+    
+                        ngDialog.open(options)
+                            .closePromise
+                            .then(function (data) {
+                                $state.go('admin.partners', {}, {reload: !data.value});
+                                return true;
+                        });
+                    }
+                }],
+                data: {
+                    is_granted: ['ROLE_ADMIN']
+                }
+            });
+    }
+    
+})();
+ 
+(function () {
+    'use strict'; 
+
+    angular
+        .module('main')
+        .controller('AdminPartnersEdit', AdminPartnersEdit);
+
+    function AdminPartnersEdit(PartnerService, Notification, $log, $scope, MEDIA_URL, ngDialog) {
+        var vm = this;
+
+        vm.save = upload;
+
+        vm.uploadProgress = 0;
+        vm.action = 'edit';
+
+        vm.partner = {};
+        vm.flow = {};
+
+        vm.flowConfig = {
+            target: MEDIA_URL,
+            singleFile: true
+        };
+
+        function updatePartner(partner) {
+            function success(response) {
+                $log.info(response);
+
+                Notification.primary(
+                    {
+                        message: 'Updated!',
+                        delay: 800,
+                        replaceMessage: true
+                    }
+                );
+
+                ngDialog.close();
+            }
+
+            function failed(response) {
+                $log.error(response);
+            }
+
+            PartnerService
+                .updatePartner(partner)
+                .then(success, failed);
+        }
+
+        function upload() {
+            if (vm.flow.files.length)
+                PartnerService
+                    .upload(vm.flow.files[0].file)
+                    .then(function(response){
+
+                        $scope.ngDialogData.metafields[0].value = response.media.name;
+
+                        updatePartner($scope.ngDialogData);
+
+                    }, function(){
+                        console.log('failed :(');
+                    }, function(progress){
+                        vm.uploadProgress = progress;
+                    });
+            else
+                updatePartner($scope.ngDialogData);
+        }
+    }
+})();
+
+(function () {
+    'use strict';
+    
+    angular
+        .module('admin.partners.edit', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('admin.partners.edit', {
+                url: '/edit/:slug',
+                onEnter: [
+                'ngDialog',
+                'PartnerService',
+                '$stateParams',
+                '$state',
+                '$log',
+                function (ngDialog, PartnerService, $stateParams, $state, $log) {
+                    getPartner($stateParams.slug);
+    
+                    function getPartner(slug) {
+                        function success(response) {
+                            openDialog(response.data.object);
+                        }
+    
+                        function failed(response) {
+                            $log.error(response);
+                        }
+
+                        PartnerService
+                            .getPartnerBySlug(slug)
+                            .then(success, failed);
+                    }
+    
+                    function openDialog(data) {
+    
+                        var options = {
+                            templateUrl: '../views/admin/admin.partners.edit.html',
+                            data: data,
+                            controller: 'AdminPartnersEdit as vm',
+                            showClose: true
+                        };
+    
+                        ngDialog.open(options)
+                            .closePromise
+                            .then(function (data) {
+                                $state.go('admin.partners', {}, {reload: !data.value});
+                                return true;
+                        });
+                    }
+                }],
                 data: {
                     is_granted: ['ROLE_ADMIN']
                 }
