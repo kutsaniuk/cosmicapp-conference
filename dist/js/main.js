@@ -30,7 +30,6 @@ angular.module("config", [])
             'speakers',
             'schedule',
             'partner',
-            'photos',
             'register',
             
             'admin',
@@ -594,41 +593,6 @@ angular.module("config", [])
 
     angular
         .module('main')
-        .controller('PhotosCtrl', PhotosCtrl);
-
-    function PhotosCtrl($stateParams, WatchService, Notification, $log, MEDIA_URL, $state) {
-        var vm = this;
-
-        
-
-    }
-})();
-
-(function () {
-    'use strict';
-    
-    angular
-        .module('photos', [])
-        .config(config);
-
-    config.$inject = ['$stateProvider', '$urlRouterProvider'];
-    function config($stateProvider, $urlRouterProvider) {
- 
-        $stateProvider
-            .state('main.photos', {
-                url: 'photos',
-                title: 'Photos',
-                templateUrl: '../views/photos/photos.html',
-                controller: 'PhotosCtrl as vm'
-            });
-    }
-})();
- 
-(function () {
-    'use strict'; 
-
-    angular
-        .module('main')
         .controller('RegisterCtrl', RegisterCtrl);
 
     function RegisterCtrl(RegisterService, $log, Notification, $state) {
@@ -1059,7 +1023,7 @@ angular.module("config", [])
 
     angular
         .module('main')
-        .service('UserService', function ($http, 
+        .service('UserService', function ($http,
                                           $cookieStore, 
                                           $q, 
                                           $rootScope, 

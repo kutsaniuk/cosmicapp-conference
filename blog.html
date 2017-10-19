@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-md-offset-2 col-md-8">
             <h2>
-                How to Build an Ecommerce App Using AngularJS
+                How to Build an Conference App Using AngularJS
             </h2>
             <hr>
             <img src="/dist/img/for-blog.png" class="img-responsive">
@@ -12,22 +12,22 @@
             </p>
             <h2>TL;DR</h2>
             <p>
-                <a href="https://github.com/kutsaniuk/ecommerce-app">Download the GitHub repo.</a><br>
-                <a href="http://ecommerce.cosmicapp.co">Check out the demo.</a>
+                <a href="https://github.com/kutsaniuk/cosmicapp-conference">Download the GitHub repo.</a><br>
+                <a href="http://conference.cosmicapp.co">Check out the demo.</a>
             </p>
             <h2>Getting Started:</h2>
             <p>
                 First, let’s make a new directory to build our project in and lets also make a package.json file.
             </p>
-            <pre>mkdir ecommerce-app</pre>
-            <pre>ecommerce-app$ touch package.json</pre>
+            <pre>mkdir conference-app</pre>
+            <pre>conference-app$ touch package.json</pre>
             <p>
                 Now, in your package.json, copy and paste the code below:
             </p>
             <pre>
-//ecommerce-app/package.json
+//conference-app/package.json
 {
-  "name": "ecommerce-app",
+  "name": "conference-app",
   "version": "1.0.0",
   "main": "app-server.js",
   "engines": {
@@ -36,20 +36,22 @@
   },
   "description": "",
   "dependencies": {
+    "body-parser": "^1.17.2",
     "bower": "^1.7.7",
+    "buffer-to-vinyl": "^1.1.0",
     "express": "^4.13.3",
     "gulp": "^3.9.1",
-    "buffer-to-vinyl": "^1.1.0",
     "gulp-autoprefixer": "^3.1.0",
     "gulp-concat": "^2.6.0",
     "gulp-concat-css": "^2.2.0",
+    "gulp-env": "^0.4.0",
     "gulp-minify-css": "^1.2.4",
     "gulp-ng-config": "^1.4.0",
-    "gulp-env": "^0.4.0",
+    "gulp-npm-script-sync": "^1.1.0",
     "gulp-webserver": "^0.9.1",
     "http-server": "^0.9.0",
-    "wiredep": "^3.0.0",
-    "gulp-npm-script-sync": "^1.1.0"
+    "stripe": "^4.22.0",
+    "wiredep": "^3.0.0"
   },
   "scripts": {
     "postinstall": "bower install && gulp config && gulp js",
@@ -68,17 +70,17 @@
             <p>
                 Second, let’s make a bower.json file.
             </p>
-            <pre>ecommerce-app$ touch bower.json</pre>
+            <pre>conference-app$ touch bower.json</pre>
             <p>
                 Now, in your bower.json, copy and paste the code below:
             </p>
             <pre>
-//ecommerce-app/bower.json
+//conference-app/bower.json
 {
-  "name": "ecommerce-app",
-  "description": "Ecommerce App",
+  "name": "conference-app",
+  "description": "Conference App",
   "version": "0.0.0",
-  "homepage": "https://github.com/kutsaniuk/ecommerce-app",
+  "homepage": "https://github.com/kutsaniuk/cosmicapp-conference",
   "license": "MIT",
   "private": true,
   "dependencies": {
@@ -110,7 +112,8 @@
     "textAngular": "^1.5.16",
     "angular-loading-bar": "^0.9.0",
     "angular-environment": "^1.0.8",
-    "angular-sticky": "angular-sticky-plugin#^0.3.0"
+    "angular-sticky": "angular-sticky-plugin#^0.3.0",
+    "smooth-scroll": ""
   },
   "resolutions": {
     "angular": "~1.4.x"
@@ -123,19 +126,24 @@
             <p>
                 Config app server:
             </p>
-            <pre>ecommerce-app$ touch app-server.js</pre>
+            <pre>conference-app$ touch app-server.js</pre>
             <pre>
 //events-app/app-server.js
+
+// app-server.js
 var express = require('express');
+var bodyParser = require('body-parser');
 var app = express();
 app.set('port', process.env.PORT || 3000)
 app.use(express.static(__dirname))
+app.use(bodyParser.json())
 var http = require('http').Server(app)
+// Route
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/index.html');
 })
 http.listen(app.get('port'), () => {
-  console.log('Ecommerce App listening on ' + app.get('port'))
+  console.log('Conference App listening on ' + app.get('port'))
 })
             </pre>
             <h2>What we're installing and why:</h2>
@@ -146,48 +154,21 @@ http.listen(app.get('port'), () => {
             </ol>
             <h2>Building our app:</h2>
             <p>
-                Now we're going to build out our file structure a bit more so that we can organize our angular modules and js files. This is what our ecommerce-app directory should look like:
+                Now we're going to build out our file structure a bit more so that we can organize our angular modules and js files. This is what our conference-app directory should look like:
             </p>
             <pre>
-ecommerce-app
+conference-app
 |----app
-|       |----auth
-|                 |----auth.ctrl.js
-|                 |----auth.service.js
-|       |----config
-|                 |----config.js
-|       |----watch
-|                 |----profile
-|                           |----watch.profile.ctrl.js
-|                           |----watch.profile.mdl.js
-|                 |----watch.ctrl.js
-|                 |----watch.mdl.js
-|                 |----watch.service.js
+|       |----about
 |       |----admin
-|                 |----orders
-|                           |----preview
-|                                   |----admin.orders.preview.mdl.js
-|                           |----admin.orders.ctrl.js
-|                           |----admin.orders.mdl.js
-|                           |----admin.orders.service.js
-|                 |----watches
-|                           |----add
-|                                   |----admin.watches.add.ctrl.js
-|                                   |----admin.watches.add.mdl.js
-|                           |----edit
-|                                   |----admin.watches.edit.ctrl.js
-|                                   |----admin.watches.edit.mdl.js
-|                           |----admin.watches.mdl.js
-|                 |----admin.ctrl.js
-|                 |----admin.mdl.js
-|       |----cart
-|                 |----checkout
-|                           |----cart.checkout.mdl.js
-|                 |----cart.ctrl.js
-|                 |----cart.mdl.js
-|                 |----cart.service.js
+|       |----auth
+|       |----global
+|       |----partner
+|       |----register
+|       |----schedule
+|       |----speakers
 |       |----user
-|                 |----user.service.js
+|       |----config.js
 |       |----main.mdl.js
 |----dist
 |       |----css
@@ -213,7 +194,7 @@ ecommerce-app
     &lt;meta name="description" content=""&gt;
     &lt;meta name="author" content=""&gt;
 
-    &lt;title&gt;Ecommerce App&lt;/title&gt;
+    &lt;title&gt;Conference App&lt;/title&gt;
 
     &lt;!-- bower:css --&gt;
     &lt;!-- endbower --&gt;
@@ -252,7 +233,7 @@ ecommerce-app
                 Copy the following code into your gulpfile.js file:
             </p>
             <pre>
-//ecommerce-app/gulpfile.js
+//conference-app/gulpfile.js
 'use strict';
 
 var gulp = require('gulp'),
@@ -291,7 +272,7 @@ gulp.task('config', function () {
     });
     return b2v.stream(new Buffer(json), 'config.js')
         .pipe(gulpNgConfig('config'))
-        .pipe(gulp.dest('app/config'));
+        .pipe(gulp.dest('app'));
 });
 
 gulp.task('default', function () {
@@ -323,6 +304,7 @@ gulp.task('bower', function () {
             'ngCookies',
             'ngRoute',
             'ngDialog',
+            'ngAnimate',
             'cr.acl',
             'ui-notification',
             'ngFlash',
@@ -331,8 +313,13 @@ gulp.task('bower', function () {
             'angular-loading-bar',
             'hl.sticky',
 
-            'watch',
-            'cart',
+            'about',
+            'speakers',
+            'schedule',
+            'partner',
+            'photos',
+            'register',
+
             'admin',
 
             'config'
@@ -350,7 +337,7 @@ gulp.task('bower', function () {
             verticalSpacing: 20,
             horizontalSpacing: 20,
             positionX: 'right',
-            positionY: 'bottom'
+            positionY: 'top'
         });
 
         $urlRouterProvider.otherwise(function ($injector) {
@@ -362,9 +349,9 @@ gulp.task('bower', function () {
 
             switch (crAcl.getRole()) {
                 case 'ROLE_ADMIN':
-                    state = 'admin.watches';
+                    state = 'admin.pages';
                     break;
-                default : state = 'main.watch';
+                default : state = 'main.about';
             }
 
             if (state) $state.go(state);
@@ -376,7 +363,7 @@ gulp.task('bower', function () {
                 url: '/',
                 abstract: true,
                 templateUrl: '../views/main.html',
-                controller: 'CartCtrl as cart',
+                controller: 'GlobalCtrl as vm',
                 data: {
                     is_granted: ['ROLE_GUEST']
                 }
@@ -399,8 +386,8 @@ gulp.task('bower', function () {
             });
     }
 
-    run.$inject = ['$rootScope', '$cookieStore', '$state', 'crAcl'];
-    function run($rootScope, $cookieStore, $state, crAcl) {
+    run.$inject = ['$rootScope', '$cookieStore', '$state', 'crAcl', '$window'];
+    function run($rootScope, $cookieStore, $state, crAcl, $window) {
         // keep user logged in after page refresh
         $rootScope.globals = $cookieStore.get('globals') || {};
 
@@ -411,15 +398,18 @@ gulp.task('bower', function () {
             });
 
         crAcl
-            .setRedirect('main.watch');
+            .setRedirect('auth');
 
         if ($rootScope.globals.currentUser) {
-            crAcl.setRole($rootScope.globals.currentUser.metadata.role);
-            // $state.go('admin.watches');
+            crAcl.setRole('ROLE_ADMIN');
         }
         else {
             crAcl.setRole();
         }
+
+        $rootScope.$on('$stateChangeSuccess', function (event, current, previous) {
+            $window.document.title = current.title ? current.title + ' - ANGULAR SUMMIT' : 'ANGULAR SUMMIT';
+        });
 
     }
 
@@ -602,7 +592,7 @@ gulp.task('bower', function () {
 })();
             </pre>
             <p>
-                Create Watch Service for get, update, add delete Watches from Cosmic JS API, copy and paste the code below:
+                Create About Service for get, update content from Cosmic JS API, copy and paste the code below:
             </p>
             <pre>
 (function () {
@@ -610,7 +600,7 @@ gulp.task('bower', function () {
 
     angular
         .module('main')
-        .service('WatchService', function ($http,
+        .service('AboutService', function ($http,
                                           $cookieStore,
                                           $q,
                                           $rootScope,
@@ -618,142 +608,194 @@ gulp.task('bower', function () {
 
             $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
-            this.watch = {
-                title: null,
-                type_slug: 'watches',
-                content: null,
-                metafields: [
-                    {
-                        key: "category",
-                        title: "Category",
-                        type: "text",
-                        value: null
-                    },
-                    {
-                        key: "brand",
-                        title: "Brand",
-                        type: "text",
-                        value: null
-                    },
-                    {
-                        key: "case_size",
-                        title: "Case Size",
-                        type: "text",
-                        value: null
-                    },
-                    {
-                        key: "case_thickness",
-                        title: "Case Thickness",
-                        type: "text",
-                        value: null
-                    },
-                    {
-                        key: "strap_width",
-                        title: "Strap Width",
-                        type: "text",
-                        value: null
-                    },
-                    {
-                        key: "movement",
-                        title: "Movement",
-                        type: "text",
-                        value: null
-                    },
-                    {
-                        key: "glass",
-                        title: "Glass",
-                        type: "text",
-                        value: null
-                    },
-                    {
-                        key: "water_resistance",
-                        title: "Water Resistance",
-                        type: "text",
-                        value: null
-                    },
-                    {
-                        key: "color",
-                        title: "Color",
-                        type: "text",
-                        value: null
-                    },
-                    {
-                        key: "strap_material",
-                        title: "Strap Material",
-                        type: "text",
-                        value: null
-                    },
-                    {
-                        key: "price",
-                        title: "Price",
-                        type: "text",
-                        value: null
-                    },
-                    {
-                        key: "images",
-                        title: "Images",
-                        type: "parent",
-                        value: "",
-                        children: [
-                            {
-                                key: "image_1",
-                                title: "Image_1",
-                                type: "file"
-                            },
-                            {
-                                key: "image_2",
-                                title: "Image_2",
-                                type: "file"
-                            },
-                            {
-                                key: "image_3",
-                                title: "Image_3",
-                                type: "file"
-                            }
-                        ]
-                    }
-                ]
-            };
-
-            this.getWatches = function (params) {
-                if (!angular.equals({}, params))
-                    return $http.get(URL + BUCKET_SLUG + '/object-type/watches/search', {
-                        params: {
-                            metafield_key: params.key,
-                            metafield_value_has: params.value,
-                            limit: 100,
-                            read_key: READ_KEY
-                        }
-                    });
-                else
-                    return $http.get(URL + BUCKET_SLUG + '/object-type/watches', {
-                        params: {
-                            limit: 100,
-                            read_key: READ_KEY
-                        }
-                    });
-            };
-            this.getWatchesParams = function () {
-                return $http.get(URL + BUCKET_SLUG + '/object-type/watches', {
+            this.getPages = function (params) {
+                return $http.get(URL + BUCKET_SLUG + '/object-type/pages', {
                     params: {
                         limit: 100,
                         read_key: READ_KEY
                     }
                 });
             };
-            this.getWatchBySlug = function (slug) {
+            this.updatePages = function (page) {
+                page.write_key = WRITE_KEY;
+
+                return $http.put(URL + BUCKET_SLUG + '/edit-object', page);
+            };
+        });
+})();
+            </pre>
+            <p>
+                Create About Controller for get and update content, copy and paste the code below:
+            </p>
+            <pre>
+update
+            </pre>
+            <p>
+                Create About Module, copy and paste the code below:
+            </p>
+            <pre>
+(function () {
+    'use strict';
+
+    angular
+        .module('about', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+
+        $stateProvider
+            .state('main.about', {
+                url: '',
+                templateUrl: '../views/about/about.html',
+                controller: 'AboutCtrl as vm'
+            });
+    }
+})();
+            </pre>
+            <h2>
+                What's going on here:
+            </h2>
+            <ol>
+                <li>We created About Service for our asynchronous calls to our Cosmic JS API. We can update, and getting content.</li>
+                <li>We created About Controller for getting content and update.</li>
+                <li>We created About Module.</li>
+            </ol>
+            <p>
+                Create Speakers Controller for CRUD Speakers, copy and paste the code below:
+            </p>
+            <pre>
+(function () {
+    'use strict';
+
+    angular
+        .module('main')
+        .controller('SpeakersCtrl', SpeakersCtrl);
+
+    function SpeakersCtrl($rootScope, SpeakersService, Notification, $log, MEDIA_URL, $state) {
+        var vm = this;
+
+        init();
+
+        vm.removeSpeaker = removeSpeaker;
+
+        function init() {
+            getSpeakers();
+        }
+
+        function getSpeakers() {
+            function success(response) {
+                vm.speakers = response.data.objects;
+            }
+
+            function error(response) {
+                $log.error(response.data);
+            }
+
+            SpeakersService
+                .getSpeakers()
+                .then(success, error);
+        }
+
+        function removeSpeaker(slug) {
+            function success() {
+                getSpeakers();
+                Notification.primary('Removed!');
+            }
+
+            function error(response) {
+                $log.error(response.data);
+            }
+
+            SpeakersService
+                .removeSpeaker(slug)
+                .then(success, error);
+        }
+
+    }
+})();
+            </pre>
+            <p>
+                Create Speakers Module, copy and paste the code below:
+            </p>
+<pre>
+(function () {
+    'use strict';
+
+    angular
+        .module('speakers', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+
+        $stateProvider
+            .state('main.speakers', {
+                url: 'speakers',
+                title: 'Speakers',
+                templateUrl: '../views/speakers/speakers.html',
+                controller: 'SpeakersCtrl as vm'
+            });
+    }
+})();
+</pre>
+<p>
+    Create Speakers Service for CRUD from Cosmic JS API, copy and paste the code below:
+</p>
+<pre>
+    (function () {
+    'use strict';
+
+    angular
+        .module('main')
+        .service('SpeakersService', function ($http,
+                                          $cookieStore,
+                                          $q,
+                                          $rootScope,
+                                          URL, BUCKET_SLUG, READ_KEY, WRITE_KEY, MEDIA_URL) {
+
+            $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
+            this.speaker = {
+                "title": null,
+                "type_slug": "speakers",
+                "metafields": [
+                    {
+                        "value":null,
+                        "key": "profession",
+                        "title": "Profession",
+                        "type": "text"
+                    },
+                    {
+                        "value": null,
+                        "key": "avatar",
+                        "title": "Avatar",
+                        "type": "file"
+                    }
+                ]
+            };
+
+            this.getSpeakers = function () {
+                return $http.get(URL + BUCKET_SLUG + '/object-type/speakers', {
+                    params: {
+                        limit: 100,
+                        read_key: READ_KEY
+                    }
+                });
+            };
+            this.getSpeakerBySlug = function (slug) {
                 return $http.get(URL + BUCKET_SLUG + '/object/' + slug, {
                     params: {
                         read_key: READ_KEY
                     }
                 });
             };
-            this.updateWatch = function (event) {
-                event.write_key = WRITE_KEY;
+            this.updateSpeaker = function (speaker) {
+                speaker.write_key = WRITE_KEY;
 
-                return $http.put(URL + BUCKET_SLUG + '/edit-object', event);
+                return $http.put(URL + BUCKET_SLUG + '/edit-object', speaker);
             };
-            this.removeWatch = function (slug) {
+            this.removeSpeaker = function (slug) {
                 return $http.delete(URL + BUCKET_SLUG + '/' + slug, {
                     ignoreLoadingBar: true,
                     headers:{
@@ -764,10 +806,10 @@ gulp.task('bower', function () {
                     }
                 });
             };
-            this.createWatch = function (watch) {
-                watch.write_key = WRITE_KEY;
+            this.createSpeaker = function (speaker) {
+                speaker.write_key = WRITE_KEY;
 
-                return $http.post(URL + BUCKET_SLUG + '/add-object', watch);
+                return $http.post(URL + BUCKET_SLUG + '/add-object', speaker);
             };
             this.upload = function (file) {
                 var fd = new FormData();
@@ -800,481 +842,14 @@ gulp.task('bower', function () {
             }
         });
 })();
-            </pre>
-            <p>
-                Create Watch Controller for get all events and remove, copy and paste the code below:
-            </p>
-            <pre>
-(function () {
-    'use strict';
-
-    angular
-        .module('main')
-        .controller('WatchCtrl', WatchCtrl);
-
-    function WatchCtrl($stateParams, WatchService, Notification, $log, MEDIA_URL, $state) {
-        var vm = this;
-
-        vm.getWatches = getWatches;
-        vm.removeWatch = removeWatch;
-
-        vm.params = $stateParams;
-
-        vm.categories = [];
-        vm.brands = [];
-        vm.case_sizes = [];
-        vm.colors = [];
-
-        vm.watches = [];
-
-        function getWatches() {
-            function success(response) {
-                $log.info(response);
-
-                vm.watches = response.data.objects;
-
-            }
-
-            function failed(response) {
-                $log.error(response);
-            }
-
-            function params(response) {
-                response.data.objects.forEach(function (item) {
-                    if (vm.categories.indexOf(item.metadata.category) === -1)
-                        vm.categories.push(item.metadata.category);
-                    if (vm.brands.indexOf(item.metadata.brand) === -1)
-                        vm.brands.push(item.metadata.brand);
-                    if (vm.case_sizes.indexOf(item.metadata.case_size) === -1)
-                        vm.case_sizes.push(item.metadata.case_size);
-                    if (vm.colors.indexOf(item.metadata.color) === -1)
-                        vm.colors.push(item.metadata.color)
-                });
-            }
-
-            WatchService
-                .getWatches($stateParams)
-                .then(success, failed);
-
-            WatchService
-                .getWatchesParams()
-                .then(params);
-        }
-
-        function removeWatch(slug) {
-            function success(response) {
-                $log.info(response);
-                getWatches();
-                Notification.success('Removed!');
-            }
-
-            function failed(response) {
-                $log.error(response);
-            }
-
-            WatchService
-                .removeWatch(slug)
-                .then(success, failed);
-
-        }
-
-    }
-})();
-            </pre>
-            <p>
-                Create Watch Module, copy and paste the code below:
-            </p>
-            <pre>
-(function () {
-    'use strict';
-
-    angular
-        .module('watch', [
-            'watch.profile'
-        ])
-        .config(config);
-
-    config.$inject = ['$stateProvider', '$urlRouterProvider'];
-    function config($stateProvider, $urlRouterProvider) {
-
-        $stateProvider
-            .state('main.watch', {
-                url: '?key&value',
-                templateUrl: '../views/watch/watch.list.html',
-                controller: 'WatchCtrl as vm'
-            });
-    }
-})();
-            </pre>
-            <h2>
-                What's going on here:
-            </h2>
-            <ol>
-                <li>We created Watch Service for our asynchronous calls to our Cosmic JS API. We can create, update, remove and getting Watches.</li>
-                <li>We created Watch Controller for getting all watches and remove.</li>
-                <li>We created Watch Module.</li>
-            </ol>
-            <p>
-                Create Watch Profile Controller for getting watch information, copy and paste the code below:
-            </p>
-            <pre>
-(function () {
-    'use strict';
-
-    angular
-        .module('main')
-        .controller('WatchProfileCtrl', WatchProfileCtrl);
-
-    function WatchProfileCtrl(UserService, $stateParams, WatchService, Notification, $log, MEDIA_URL, $state) {
-        var vm = this;
-
-        vm.getWatch = getWatch;
-
-        function getWatch() {
-            function success(response) {
-                $log.info(response);
-                vm.watch = response.data.object;
-            }
-
-            function failed(response) {
-                $log.error(response);
-            }
-
-            WatchService
-                .getWatchBySlug($stateParams.slug)
-                .then(success, failed);
-        }
-
-    }
-})();
-
-            </pre>
-            <p>
-                Create Watch Profile Module, copy and paste the code below:
-            </p>
-            <pre>
-(function () {
-    'use strict';
-
-    angular
-        .module('watch.profile', [])
-        .config(config);
-
-    config.$inject = ['$stateProvider', '$urlRouterProvider'];
-    function config($stateProvider, $urlRouterProvider) {
-
-        $stateProvider
-            .state('main.watch.profile', {
-                url: 'watches/:slug',
-                views: {
-                    '@main': {
-                        templateUrl: '../views/watch/watch.profile.html',
-                        controller: 'WatchProfileCtrl as vm'
-                    }
-                }
-            });
-    }
-
-})();
-</pre>
-<p>
-    Create Cart Controller, copy and paste the code below:
-</p>
-<pre>
-    (function () {
-    'use strict';
-
-    angular
-        .module('main')
-        .controller('CartCtrl', CartCtrl);
-
-    function CartCtrl(CartService, WatchService, Notification, $log, MEDIA_URL, $state) {
-        var vm = this;
-
-        vm.addToCart = addToCart;
-        vm.getCart = getCart;
-        vm.hasInCart = hasInCart;
-        vm.removeFromCart = removeFromCart;
-        vm.completeOrder = completeOrder;
-
-        vm.cart = {};
-        vm.cart.order = {};
-        vm.watches = [];
-        vm.totalPrice = 0;
-        vm.orderForm = null;
-
-        function addToCart(item) {
-            function success(response) {
-                Notification.success(response);
-                getCart();
-
-            }
-
-            function failed(response) {
-                Notification.error(response);
-            }
-
-            CartService
-                .addToCart(item)
-                .then(success, failed);
-
-        }
-
-        function completeOrder(order) {
-            order.watches = vm.watches;
-
-            function success(response) {
-                Notification.success('Success');
-
-            }
-
-            function failed(response) {
-                Notification.error(response.data.message);
-            }
-
-            if (vm.orderForm)
-                CartService
-                    .completeOrder(order)
-                    .then(success, failed);
-        }
-
-        function removeFromCart(_id) {
-            function success(response) {
-                Notification.success(response);
-                getCart();
-            }
-
-            function failed(response) {
-                Notification.error(response);
-            }
-
-            CartService
-                .removeFromCart(_id)
-                .then(success, failed);
-
-        }
-
-        function hasInCart(_id) {
-            return CartService.hasInCart(_id);
-        }
-
-        function getCart() {
-            function success(response) {
-                vm.cart = response;
-                getWatches();
-
-                $log.info(response);
-            }
-
-            function failed(response) {
-                $log.error(response);
-            }
-
-            CartService
-                .getCart()
-                .then(success, failed);
-
-        }
-
-        function getWatches() {
-            function success(response) {
-                $log.info(response);
-
-                vm.watches = [];
-                vm.totalPrice = 0;
-
-                for (var _id in vm.cart)
-                    response.data.objects.forEach(function (item) {
-                        if (item._id === _id) {
-                            vm.watches.push(item);
-                            vm.totalPrice += item.metadata.price;
-                        }
-                    });
-
-            }
-
-            function failed(response) {
-                $log.error(response);
-            }
-
-            WatchService
-                .getWatches({})
-                .then(success, failed);
-
-        }
-    }
-})();
-</pre>
-            <p>
-                Create Cart Service, copy and paste the code below:
-            </p>
-<pre>
-    (function () {
-    'use strict';
-
-    angular
-        .module('main')
-        .service('CartService', function ($http,
-                                          $cookieStore,
-                                          $q,
-                                          $rootScope,
-                                          URL, BUCKET_SLUG, READ_KEY, WRITE_KEY) {
-            var that = this;
-            $http.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-
-            that.addToCart = function (item) {
-                var deferred = $q.defer();
-
-                var cart = $cookieStore.get('cart');
-                cart = cart ? cart : {};
-
-                if (!(item._id in cart)) {
-                    cart[item._id] = item._id;
-
-                    $cookieStore.put('cart', cart);
-
-                    deferred.resolve('Added to cart');
-                } else {
-                    deferred.reject('Error: Can\'t added to cart');
-                }
-
-                return deferred.promise;
-            };
-
-            that.getCart = function () {
-                var deferred = $q.defer();
-                var cart = $cookieStore.get('cart');
-
-                if (cart) {
-                    deferred.resolve(cart);
-                } else {
-                    deferred.reject('Error: Can\'t get cart');
-                }
-
-                return deferred.promise;
-            };
-
-            that.removeFromCart = function (_id) {
-                var deferred = $q.defer();
-
-                var cart = $cookieStore.get('cart');
-                cart = cart ? cart : {};
-
-                if (_id in cart) {
-                    delete cart[_id];
-
-                    $cookieStore.put('cart', cart);
-
-                    deferred.resolve('Removed from cart');
-                } else {
-                    deferred.reject('Error: Can\'t remove from cart');
-                }
-
-                return deferred.promise;
-            };
-
-            that.hasInCart = function (_id) {
-                var cart = $cookieStore.get('cart');
-                cart = cart ? cart : {};
-
-                return _id in cart;
-            };
-
-            that.completeOrder = function (order) {
-                var watches = [];
-
-                order.watches.forEach(function (item) {
-                    watches.push(item._id);
-                });
-
-                return $http.post(URL + BUCKET_SLUG + '/add-object/', {
-                    write_key: WRITE_KEY,
-                    title: order.firstName + ' ' + order.lastName,
-                    type_slug: "orders",
-                    metafields: [
-                        {
-                            key: "first_name",
-                            type: "text",
-                            value: order.firstName
-
-                        },
-                        {
-                            key: "last_name",
-                            type: "text",
-                            value: order.lastName
-
-                        },
-                        {
-                            key: "address",
-                            type: "text",
-                            value: order.address
-
-                        },
-                        {
-                            key: "city",
-                            type: "text",
-                            value: order.city
-
-                        },
-                        {
-                            key: "phone",
-                            type: "text",
-                            value: order.phone
-
-                        },
-                        {
-                            key: "postal_code",
-                            type: "text",
-                            value: order.postalCode
-
-                        },
-                        {
-                            key: "email",
-                            type: "text",
-                            value: order.email
-                        },
-                        {
-                            key: "watches",
-                            type: "objects",
-                            object_type: "watches",
-                            value: watches.join()
-                        }
-                    ]
-                });
-            };
-        });
-})();
-</pre>
-            <p>
-                Create Cart Module, copy and paste the code below:
-            </p>
-<pre>
-    (function () {
-    'use strict';
-
-    angular
-        .module('cart', [
-            'cart.checkout'
-        ])
-        .config(config);
-
-    config.$inject = ['$stateProvider', '$urlRouterProvider'];
-    function config($stateProvider, $urlRouterProvider) {
-
-        $stateProvider
-            .state('main.cart', {
-                url: 'cart',
-                templateUrl: '../views/cart/cart.html'
-            });
-    }
-})();
 </pre>
             <h2>
                 What's going on here:
             </h2>
             <ol>
-                <li>We can see information about watches.</li>
-                <li>We can adding watches to cart.</li>
+                <li>We can see information about speakers.</li>
+                <li>We can CRUD speakers.</li>
+                <li>We can upload avatar to speaker.</li>
             </ol>
             <h2>Conclusion:</h2>
             <p>

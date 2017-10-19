@@ -3,7 +3,7 @@
 
     angular
         .module('main')
-        .service('UserService', function ($http, 
+        .service('UserService', function ($http,
                                           $cookieStore, 
                                           $q, 
                                           $rootScope, 

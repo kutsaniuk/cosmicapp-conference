@@ -22,7 +22,6 @@
             'speakers',
             'schedule',
             'partner',
-            'photos',
             'register',
             
             'admin',
