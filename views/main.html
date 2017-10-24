@@ -1,11 +1,11 @@
-<nav ng-class="{'navbar-solid': !$state.is('main.about'), 'site-nav': $state.is('main.about')}"
+<nav ng-class="{'navbar-solid': !$state.is('main.home'), 'site-nav': $state.is('main.home')}"
      class="navbar navbar-fixed-top navbar-custom">
     <div class="container">
         <div class="navbar-header">
 
             <!-- logo -->
             <div class="site-branding">
-                <a class="logo" ui-sref="main.about">
+                <a class="logo" ui-sref="main.home">
 
                     <!-- logo image  -->
                     <img src="dist/img/logo.png" alt="Logo">
@@ -27,11 +27,13 @@
             <ul class="nav navbar-nav navbar-right">
 
                 <!-- navigation menu -->
+                <li ui-sref-active="active"><a ui-sref="main.home">Home</a></li>
                 <li ui-sref-active="active"><a ui-sref="main.about">About</a></li>
                 <li ui-sref-active="active"><a ui-sref="main.speakers">Speakers</a></li>
                 <li ui-sref-active="active"><a ui-sref="main.schedule">Schedule</a></li>
                 <li ui-sref-active="active"><a ui-sref="main.partner">Partner</a></li>
                 <li ui-sref-active="active"><a ui-sref="main.register">Registration</a></li>
+                <li ui-sref-active="active"><a ui-sref="auth">Login</a></li>
 
             </ul>
         </div>
@@ -40,50 +42,17 @@
 
 <ui-view></ui-view>
 
-
-<!--<section id="contribution" class="section bg-image-2 contribution">-->
-    <!--<div class="container">-->
-        <!--<div class="row">-->
-            <!--<div class="col-md-12">-->
-                <!--<h3 class="text-uppercase mt0 font-400">Submit Your Contribution Work</h3>-->
-
-                <!--<p>You've inspired new consumer, racked up click-thru's, blown-up brand awareness. We can't give you back the weekends you worked, or erase the pain of being forced to make the logo bigger. But if you submit your best work.</p>-->
-
-                <!--<a class="btn btn-white" href="#">Submit</a>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
-<!--</section>-->
-
-
-<!--<section id="location" class="section location">-->
-    <!--<div class="container">-->
-        <!--<div class="row">-->
-            <!--<div class="col-sm-3">-->
-                <!--<h3 class="section-title">Event Location</h3>-->
-                <!--<address>-->
-                    <!--<p>Eardenia<br> The Grand Hall<br> House # 08, Road #52, Street<br> Phone: +1159t3764<br> Email: example@mail.com</p>-->
-                <!--</address>-->
-            <!--</div>-->
-            <!--<div class="col-sm-9">-->
-                <!--<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d96706.50013548559!2d-78.9870674333782!3d40.76030630398601!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54eab584e432360b%3A0x1c3bb99243deb742!2sUnited+States!5e0!3m2!1sen!2sbd!4v1436299406518" width="100%" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
-<!--</section>-->
-
-<!--<footer class="site-footer">-->
-    <!--<div class="container">-->
-        <!--<div class="row">-->
-            <!--<div class="col-md-12">-->
-                <!--<p class="site-info">Designed and <br> Developed by <a href="http://technextit.com">Technext Limited</a></p>-->
-                <!--<ul class="social-block">-->
-                    <!--<li><a href=""><i class="ion-social-twitter"></i></a></li>-->
-                    <!--<li><a href=""><i class="ion-social-facebook"></i></a></li>-->
-                    <!--<li><a href=""><i class="ion-social-linkedin-outline"></i></a></li>-->
-                    <!--<li><a href=""><i class="ion-social-googleplus"></i></a></li>-->
-                <!--</ul>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
-<!--</footer>-->
+<footer class="site-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 text-left">
+                <span class="footer-logo">
+                    <img src="https://cosmicjs.com/images/logo.svg" width="28" height="28"> Proudly powered by Cosmic JS
+                </span>
+            </div>
+            <div class="col-lg-4 text-center">
+                <span class="">Copyright <i class="fa fa-copyright"></i> Conference App 2017.</span>
+            </div>
+        </div>
+    </div>
+</footer>

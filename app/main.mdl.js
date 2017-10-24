@@ -19,6 +19,7 @@
             'hl.sticky',
 
             'about',
+            'home',
             'speakers',
             'schedule',
             'partner',
@@ -55,7 +56,7 @@
                 case 'ROLE_ADMIN':
                     state = 'admin.pages';
                     break;
-                default : state = 'main.about';
+                default : state = 'main.home';
             }
 
             if (state) $state.go(state);

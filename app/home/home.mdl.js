@@ -2,18 +2,18 @@
     'use strict';
     
     angular
-        .module('about', [])
+        .module('home', [])
         .config(config);
 
     config.$inject = ['$stateProvider', '$urlRouterProvider'];
     function config($stateProvider, $urlRouterProvider) {
  
         $stateProvider
-            .state('main.about', {
-                url: 'about',
-                templateUrl: '../views/about/about.html',
+            .state('main.home', {
+                url: '',
+                templateUrl: '../views/home/home.html',
                 controller: 'AboutCtrl as vm'
             });
     }
 })();
-  
+ 

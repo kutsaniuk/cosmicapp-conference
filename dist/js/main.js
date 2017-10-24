@@ -27,6 +27,7 @@ angular.module("config", [])
             'hl.sticky',
 
             'about',
+            'home',
             'speakers',
             'schedule',
             'partner',
@@ -63,7 +64,7 @@ angular.module("config", [])
                 case 'ROLE_ADMIN':
                     state = 'admin.pages';
                     break;
-                default : state = 'main.about';
+                default : state = 'main.home';
             }
 
             if (state) $state.go(state);
@@ -191,13 +192,13 @@ angular.module("config", [])
  
         $stateProvider
             .state('main.about', {
-                url: '',
+                url: 'about',
                 templateUrl: '../views/about/about.html',
                 controller: 'AboutCtrl as vm'
             });
     }
 })();
- 
+  
 (function () {
     'use strict';
 
@@ -425,6 +426,25 @@ angular.module("config", [])
     }
 })(); 
 
+(function () {
+    'use strict';
+    
+    angular
+        .module('home', [])
+        .config(config);
+
+    config.$inject = ['$stateProvider', '$urlRouterProvider'];
+    function config($stateProvider, $urlRouterProvider) {
+ 
+        $stateProvider
+            .state('main.home', {
+                url: '',
+                templateUrl: '../views/home/home.html',
+                controller: 'AboutCtrl as vm'
+            });
+    }
+})();
+ 
 (function () {
     'use strict'; 
 
